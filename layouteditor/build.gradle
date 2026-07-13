@@ -61,6 +61,15 @@ android {
         exclude "license/LICENSE.dom-software.txt"
         exclude "license/LICENSE"
     }
+
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'armeabi-v7a', 'arm64-v8a'
+            universalApk true
+        }
+    }
 }
 
 dependencies {

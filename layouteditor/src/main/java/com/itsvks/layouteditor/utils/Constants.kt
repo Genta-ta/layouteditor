@@ -71,7 +71,7 @@ object Constants {
   @JvmField
   val DESIGN_DASH_COLOR = Color.parseColor("#1689F6")
   const val DESIGN_BACKGROUND_COLOR = Color.WHITE
-  const val GITHUB_URL = "https://github.com/itsvks19/LayoutEditor"
+  const val GITHUB_URL = "https://github.com/Genta-ta/layouteditor"
   const val EXTRA_KEY_PROJECT = "project"
   const val EXTRA_KEY_LAYOUT = "layout"
 

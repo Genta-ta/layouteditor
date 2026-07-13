@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.itsvks.layouteditor.views.CustomDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.itsvks.layouteditor.views.CustomDrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer"
@@ -30,21 +31,21 @@
 
                 <ImageView
                     android:id="@+id/device_size"
-                    style="@style/ToolbarButtonStyle"
+                    android:layout_marginEnd="5dp"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="5dp"
                     android:src="@drawable/cellphone_screenshot"
-                    tools:ignore="ContentDescription" />
+                    tools:ignore="ContentDescription"
+                    style="@style/ToolbarButtonStyle" />
 
                 <ImageView
                     android:id="@+id/view_type"
-                    style="@style/ToolbarButtonStyle"
-                    android:layout_centerVertical="true"
                     android:layout_marginEnd="5dp"
-                    android:layout_toStartOf="@id/device_size"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/device_size"
                     android:src="@drawable/view_type"
-                    tools:ignore="ContentDescription" />
+                    tools:ignore="ContentDescription"
+                    style="@style/ToolbarButtonStyle" />
 
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/divider"
@@ -52,6 +53,7 @@
                     android:layout_height="1px"
                     android:layout_alignParentBottom="true"
                     android:alpha="0.5" />
+
             </RelativeLayout>
 
         </com.google.android.material.appbar.AppBarLayout>
@@ -90,10 +92,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
-                android:layout_toEndOf="@id/palette_navigation"
-                android:ellipsize="end"
                 android:paddingStart="5dp"
                 android:paddingTop="8dp"
+                android:layout_toEndOf="@id/palette_navigation"
+                android:ellipsize="end"
                 android:singleLine="true"
                 android:text="Palette"
                 android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
@@ -104,12 +106,12 @@
                 android:id="@+id/title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/palette_text"
                 android:layout_marginStart="5dp"
-                android:layout_toEndOf="@id/palette_navigation"
-                android:ellipsize="end"
                 android:paddingStart="5dp"
                 android:paddingBottom="8dp"
+                android:layout_below="@id/palette_text"
+                android:layout_toEndOf="@id/palette_navigation"
+                android:ellipsize="end"
                 android:singleLine="true"
                 android:text="Common"
                 android:textColor="?attr/colorSecondaryVariant"
@@ -130,7 +132,9 @@
                     android:scrollbars="vertical" />
 
             </HorizontalScrollView>
+
         </RelativeLayout>
+
     </com.google.android.material.navigation.NavigationView>
 
     <com.google.android.material.navigation.NavigationView
@@ -158,6 +162,9 @@
                     android:orientation="vertical" />
 
             </HorizontalScrollView>
+
         </ScrollView>
+
     </com.google.android.material.navigation.NavigationView>
+
 </com.itsvks.layouteditor.views.CustomDrawerLayout>

@@ -4,7 +4,10 @@ import android.animation.LayoutTransition
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.PointF
+import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.DragEvent
 import android.view.GestureDetector
@@ -17,6 +20,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.TooltipCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +31,7 @@ import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.itsvks.layouteditor.BuildConfig
 import com.itsvks.layouteditor.R
 import com.itsvks.layouteditor.adapters.AppliedAttributesAdapter
 import com.itsvks.layouteditor.databinding.ShowAttributesDialogBinding
@@ -42,7 +47,6 @@ import com.itsvks.layouteditor.editor.dialogs.SizeDialog
 import com.itsvks.layouteditor.editor.dialogs.StringDialog
 import com.itsvks.layouteditor.editor.dialogs.ViewDialog
 import com.itsvks.layouteditor.editor.initializer.AttributeInitializer
-
 import com.itsvks.layouteditor.editor.initializer.AttributeMap
 import com.itsvks.layouteditor.managers.IdManager
 import com.itsvks.layouteditor.managers.IdManager.addId
@@ -55,6 +59,7 @@ import com.itsvks.layouteditor.tools.XmlLayoutGenerator
 import com.itsvks.layouteditor.tools.XmlLayoutParser
 import com.itsvks.layouteditor.utils.ArgumentUtil.parseType
 import com.itsvks.layouteditor.utils.Constants
+import com.itsvks.layouteditor.utils.EditorLog
 import com.itsvks.layouteditor.utils.FileUtil
 import com.itsvks.layouteditor.utils.InvokeUtil
 import com.itsvks.layouteditor.utils.Utils
@@ -62,12 +67,16 @@ import com.itsvks.layouteditor.views.StructureView
 import kotlin.math.abs
 
 class DesignEditor : LinearLayout {
+  companion object {
+    private const val TAG = "DesignEditor"
+  }
+
   var viewType: ViewType? = null
     set(value) {
-      isBlueprint = viewType == ViewType.BLUEPRINT
+      field = value
+      isBlueprint = value == ViewType.BLUEPRINT
       setBlueprintOnChildren()
       invalidate()
-      field = value
     }
   var deviceConfiguration: DeviceConfiguration? = null
   var apiLevel: APILevel? = null
@@ -85,6 +94,20 @@ class DesignEditor : LinearLayout {
   private var isBlueprint = false
   private var structureView: StructureView? = null
   private var undoRedoManager: UndoRedoManager? = null
+
+  private var selectedView: View? = null
+  private var activeHandle: Int = -1
+  private var resizeFirstTouchX: Float = 0f
+  private var resizeFirstTouchY: Float = 0f
+  private lateinit var handlePaint: Paint
+  private lateinit var selectionBorderPaint: Paint
+  private var handleRadius: Int = 0
+  private var handleTouchSlop: Int = 0
+  private var resizeBaseLeft: Int = 0
+  private var resizeBaseTop: Int = 0
+  private var resizeBaseWidth: Int = 0
+  private var resizeBaseHeight: Int = 0
+  private val savedLayoutTransitions = HashMap<ViewGroup, LayoutTransition?>()
 
   constructor(context: Context) : super(context) {
     init(context)
@@ -119,6 +142,20 @@ class DesignEditor : LinearLayout {
     )
     paint.strokeWidth = Utils.pxToDp(context, 3).toFloat()
 
+    handleRadius = Utils.pxToDp(context, 10)
+    handleTouchSlop = Utils.pxToDp(context, 30)
+
+    handlePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+      color = Color.WHITE
+      style = Paint.Style.FILL
+    }
+
+    selectionBorderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+      color = Constants.DESIGN_DASH_COLOR
+      style = Paint.Style.STROKE
+      strokeWidth = Utils.pxToDp(context, 2).toFloat()
+    }
+
     orientation = VERTICAL
     setTransition(this)
     setDragListener(this)
@@ -129,6 +166,7 @@ class DesignEditor : LinearLayout {
 
   override fun dispatchDraw(canvas: Canvas) {
     super.dispatchDraw(canvas)
+    drawSelectionIndicator(canvas)
     when (viewType) {
       ViewType.BLUEPRINT -> drawBlueprint(canvas)
       ViewType.DESIGN -> drawDesign(canvas)
@@ -155,13 +193,235 @@ class DesignEditor : LinearLayout {
   private fun drawBlueprint(canvas: Canvas) {
     paint.color = Constants.BLUEPRINT_DASH_COLOR
     setBackgroundColor(Constants.BLUEPRINT_BACKGROUND_COLOR)
-    Utils.drawDashPathStroke(this, canvas, (paint))
+    Utils.drawDashPathStroke(this, canvas, paint)
   }
 
   private fun drawDesign(canvas: Canvas) {
     paint.color = Constants.DESIGN_DASH_COLOR
     setBackgroundColor(Utils.getSurfaceColor(context))
-    Utils.drawDashPathStroke(this, canvas, (paint))
+    Utils.drawDashPathStroke(this, canvas, paint)
+  }
+
+  private fun getSelectedViewBounds(): RectF? {
+    val sv = selectedView ?: return null
+    var left = sv.left.toFloat()
+    var top = sv.top.toFloat()
+    var p = sv.parent as? View
+    while (p != null && p !== this) {
+      left += p.left.toFloat()
+      top += p.top.toFloat()
+      p = p.parent as? View
+    }
+    return RectF(left, top, left + sv.width.toFloat(), top + sv.height.toFloat())
+  }
+
+  private fun getHandlePositions(bounds: RectF): Array<PointF> {
+    val mx = bounds.centerX()
+    val my = bounds.centerY()
+    return arrayOf(
+      PointF(bounds.left, bounds.top),
+      PointF(mx, bounds.top),
+      PointF(bounds.right, bounds.top),
+      PointF(bounds.left, my),
+      PointF(bounds.right, my),
+      PointF(bounds.left, bounds.bottom),
+      PointF(mx, bounds.bottom),
+      PointF(bounds.right, bounds.bottom)
+    )
+  }
+
+  private fun drawSelectionIndicator(canvas: Canvas) {
+    val sv = selectedView ?: return
+    if (sv.parent == null) return
+    val bounds = getSelectedViewBounds() ?: return
+    if (BuildConfig.DEBUG) EditorLog.d(TAG, "drawSelectionIndicator: bounds=$bounds, sv.left=${sv.left}, sv.top=${sv.top}, sv.w=${sv.width}, sv.h=${sv.height}")
+
+    selectionBorderPaint.color = if (isBlueprint) Constants.BLUEPRINT_DASH_COLOR else Constants.DESIGN_DASH_COLOR
+    selectionBorderPaint.style = Paint.Style.STROKE
+    canvas.drawRect(bounds, selectionBorderPaint)
+
+    val positions = getHandlePositions(bounds)
+    for (pos in positions) {
+      handlePaint.color = Color.WHITE
+      canvas.drawCircle(pos.x, pos.y, handleRadius.toFloat(), handlePaint)
+      selectionBorderPaint.style = Paint.Style.STROKE
+      canvas.drawCircle(pos.x, pos.y, handleRadius.toFloat(), selectionBorderPaint)
+    }
+  }
+
+  override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+    if (BuildConfig.DEBUG) EditorLog.d(TAG, "onInterceptTouchEvent: action=${ev.action}, x=${ev.x}, y=${ev.y}, selectedView=$selectedView")
+    if (ev.action == MotionEvent.ACTION_DOWN && selectedView != null) {
+      val bounds = getSelectedViewBounds()
+      if (BuildConfig.DEBUG) EditorLog.d(TAG, "  bounds=$bounds, handleTouchSlop=$handleTouchSlop")
+      if (bounds != null) {
+        val positions = getHandlePositions(bounds)
+        for (i in positions.indices) {
+          val dx = ev.x - positions[i].x
+          val dy = ev.y - positions[i].y
+          val dist2 = dx * dx + dy * dy
+          if (BuildConfig.DEBUG) EditorLog.d(TAG, "  handle[$i]: pos=(${positions[i].x},${positions[i].y}), dist=$dist2, threshold=${handleTouchSlop * handleTouchSlop}")
+          if (dist2 < handleTouchSlop * handleTouchSlop) {
+            if (BuildConfig.DEBUG) EditorLog.d(TAG, "  >>> HANDLE HIT: $i <<<")
+            activeHandle = i
+            resizeFirstTouchX = ev.x
+            resizeFirstTouchY = ev.y
+            val sv = selectedView!!
+            resizeBaseLeft = sv.left
+            resizeBaseTop = sv.top
+            resizeBaseWidth = sv.width
+            resizeBaseHeight = sv.height
+            setParentsLayoutSuppressed(selectedView, true)
+            return true
+          }
+        }
+      }
+    }
+    return super.onInterceptTouchEvent(ev)
+  }
+
+  @SuppressLint("ClickableViewAccessibility")
+  override fun onTouchEvent(event: MotionEvent): Boolean {
+    if (BuildConfig.DEBUG) EditorLog.d(TAG, "onTouchEvent: action=${event.action}, activeHandle=$activeHandle, selectedView=$selectedView")
+    when (event.action) {
+      MotionEvent.ACTION_DOWN -> {
+        if (activeHandle != -1) {
+          if (BuildConfig.DEBUG) EditorLog.d(TAG, "  already intercepting handle=$activeHandle, skip")
+          return true
+        }
+        if (selectedView != null) {
+          val bounds = getSelectedViewBounds()
+          if (bounds != null) {
+            val positions = getHandlePositions(bounds)
+            for (i in positions.indices) {
+              val dx = event.x - positions[i].x
+              val dy = event.y - positions[i].y
+              if (dx * dx + dy * dy < handleTouchSlop * handleTouchSlop) {
+                if (BuildConfig.DEBUG) EditorLog.d(TAG, "  >>> TOUCH DOWN HANDLE: $i <<<")
+                activeHandle = i
+                resizeFirstTouchX = event.x
+                resizeFirstTouchY = event.y
+                val sv = selectedView!!
+                resizeBaseLeft = sv.left
+                resizeBaseTop = sv.top
+                resizeBaseWidth = sv.width
+                resizeBaseHeight = sv.height
+                setParentsLayoutSuppressed(selectedView, true)
+                return true
+              }
+            }
+          }
+        }
+        if (BuildConfig.DEBUG) EditorLog.d(TAG, "  no handle hit, deselecting")
+        selectedView = null
+        invalidate()
+      }
+
+      MotionEvent.ACTION_MOVE -> {
+        if (activeHandle != -1 && selectedView != null) {
+          val dx = event.x - resizeFirstTouchX
+          val dy = event.y - resizeFirstTouchY
+          if (BuildConfig.DEBUG) EditorLog.d(TAG, "  RESIZE: dx=$dx, dy=$dy, activeHandle=$activeHandle")
+          resizeSelectedView(dx, dy)
+          return true
+        }
+      }
+
+      MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+        if (activeHandle != -1 && selectedView != null) {
+          if (BuildConfig.DEBUG) EditorLog.d(TAG, "  RESIZE END: releasing handle=$activeHandle")
+          val sv = selectedView!!
+          setParentsLayoutSuppressed(selectedView, false)
+          val lp = sv.layoutParams
+          if (lp != null) {
+            lp.width = sv.width
+            lp.height = sv.height
+            sv.layoutParams = lp
+          }
+          activeHandle = -1
+          updateUndoRedoHistory()
+          updateStructure()
+          return true
+        }
+      }
+    }
+    return true
+  }
+
+  private fun resizeSelectedView(dx: Float, dy: Float) {
+    val sv = selectedView ?: return
+    val minSize = Utils.pxToDp(context, 20)
+
+    var newLeft = sv.left
+    var newTop = sv.top
+    var newWidth = resizeBaseWidth
+    var newHeight = resizeBaseHeight
+
+    when (activeHandle) {
+      0 -> {
+        newWidth = Math.max(minSize, resizeBaseWidth - dx.toInt())
+        newHeight = Math.max(minSize, resizeBaseHeight - dy.toInt())
+        newLeft = resizeBaseLeft + resizeBaseWidth - newWidth
+        newTop = resizeBaseTop + resizeBaseHeight - newHeight
+      }
+      1 -> {
+        newHeight = Math.max(minSize, resizeBaseHeight - dy.toInt())
+        newTop = resizeBaseTop + resizeBaseHeight - newHeight
+      }
+      2 -> {
+        newWidth = Math.max(minSize, resizeBaseWidth + dx.toInt())
+        newHeight = Math.max(minSize, resizeBaseHeight - dy.toInt())
+        newTop = resizeBaseTop + resizeBaseHeight - newHeight
+      }
+      3 -> {
+        newWidth = Math.max(minSize, resizeBaseWidth - dx.toInt())
+        newLeft = resizeBaseLeft + resizeBaseWidth - newWidth
+      }
+      4 -> {
+        newWidth = Math.max(minSize, resizeBaseWidth + dx.toInt())
+      }
+      5 -> {
+        newWidth = Math.max(minSize, resizeBaseWidth - dx.toInt())
+        newHeight = Math.max(minSize, resizeBaseHeight + dy.toInt())
+        newLeft = resizeBaseLeft + resizeBaseWidth - newWidth
+      }
+      6 -> {
+        newHeight = Math.max(minSize, resizeBaseHeight + dy.toInt())
+      }
+      7 -> {
+        newWidth = Math.max(minSize, resizeBaseWidth + dx.toInt())
+        newHeight = Math.max(minSize, resizeBaseHeight + dy.toInt())
+      }
+    }
+    sv.layout(newLeft, newTop, newLeft + newWidth, newTop + newHeight)
+    if (BuildConfig.DEBUG) EditorLog.d(TAG, "  resize: left=$newLeft, top=$newTop, w=$newWidth, h=$newHeight")
+    invalidate()
+  }
+
+  private fun setParentsLayoutSuppressed(view: View?, suppressed: Boolean) {
+    if (BuildConfig.DEBUG) EditorLog.d(TAG, "setParentsLayoutSuppressed: suppressed=$suppressed, view=$view")
+    var current: View? = view?.parent as? View
+    while (current != null) {
+      if (current is ViewGroup) {
+        if (suppressed) {
+          savedLayoutTransitions[current] = current.layoutTransition
+          current.layoutTransition = null
+          current.suppressLayout(true)
+          current.requestDisallowInterceptTouchEvent(true)
+        } else {
+          current.suppressLayout(false)
+          current.layoutTransition = savedLayoutTransitions.remove(current)
+          current.requestDisallowInterceptTouchEvent(false)
+        }
+      }
+      current = current.parent as? View
+    }
+  }
+
+  private fun selectView(view: View?) {
+    if (BuildConfig.DEBUG) EditorLog.d(TAG, "selectView: ${view?.javaClass?.simpleName}, activeHandle=$activeHandle")
+    selectedView = view
+    invalidate()
   }
 
   fun previewLayout(deviceConfiguration: DeviceConfiguration?, apiLevel: APILevel?) {
@@ -228,6 +488,10 @@ class DesignEditor : LinearLayout {
           }
 
           DragEvent.ACTION_DRAG_ENDED -> if (!event.result && draggedView != null) {
+            if (selectedView == draggedView) {
+              selectedView = null
+              invalidate()
+            }
             removeId(draggedView, draggedView is ViewGroup)
             removeViewAttributes(draggedView)
             viewAttributeMap.remove(draggedView)
@@ -353,16 +617,11 @@ class DesignEditor : LinearLayout {
     if (xml.isEmpty()) return
 
     val parser = XmlLayoutParser(context)
-    try {
-      parser.parseFromXml(xml, context)
-    } catch (e : Exception) {
-      throw e
-    }
-    val root = parser.root
+    parser.parseFromXml(xml, context)
     addView(parser.root)
     viewAttributeMap = parser.viewAttributeMap
 
-    for (view in (viewAttributeMap as HashMap<View, *>?)!!.keys) {
+    for (view in viewAttributeMap.keys) {
       rearrangeListeners(view)
 
       if (view is ViewGroup) {
@@ -391,6 +650,8 @@ class DesignEditor : LinearLayout {
   }
 
   private fun clearAll() {
+    selectedView = null
+    activeHandle = -1
     removeAllViews()
     structureView!!.clear()
     viewAttributeMap.clear()
@@ -416,12 +677,19 @@ class DesignEditor : LinearLayout {
   }
 
   private fun rearrangeListeners(view: View) {
+    if (view is TextView) {
+      view.setTextIsSelectable(false)
+    }
+    view.isLongClickable = false
+
     val gestureDetector =
       GestureDetector(
         context,
         object : SimpleOnGestureListener() {
           override fun onLongPress(event: MotionEvent) {
-            view.startDragAndDrop(null, DragShadowBuilder(view), view, 0)
+            try {
+              view.startDragAndDrop(null, DragShadowBuilder(view), view, 0)
+            } catch (_: Exception) {}
           }
         })
 
@@ -450,7 +718,10 @@ class DesignEditor : LinearLayout {
               diffX = abs((startX - endX).toDouble()).toFloat()
               diffY = abs((startY - endY).toDouble()).toFloat()
 
-              if ((diffX <= 5) && (diffY <= 5) && bClick) showDefinedAttributes(v)
+              if ((diffX <= 5) && (diffY <= 5) && bClick) {
+                selectView(v)
+                showDefinedAttributes(v)
+              }
 
               bClick = false
             }
@@ -562,6 +833,10 @@ class DesignEditor : LinearLayout {
         .setPositiveButton(
           R.string.yes
         ) { _, _ ->
+          if (selectedView == target) {
+            selectedView = null
+            invalidate()
+          }
           removeId(target, target is ViewGroup)
           removeViewAttributes(target)
           removeWidget(target)
@@ -589,28 +864,6 @@ class DesignEditor : LinearLayout {
       .setAdapter(
         ArrayAdapter(context, android.R.layout.simple_list_item_1, names)
       ) { _, w ->
-        /*
-                  if (getChildAt(0) instanceof ConstraintLayout) {
-                    final List<String> keys = VIEW_ATTRIBUTE_MAP.get(target).keySet();
-
-                    final List<HashMap<String, Object>> attrs = new ArrayList<>();
-                    final List<HashMap<String, Object>> allAttrs =
-                        INITIALIZER.getAllAttributesForView(target);
-
-                    for (String key : keys) {
-                      for (HashMap<String, Object> map : allAttrs) {
-                        if (map.get(Constants.KEY_ATTRIBUTE_NAME).toString().equals(key)) {
-                          attrs.add(map);
-                          break;
-                        }
-                      }
-                    }
-
-                    for(HashMap<String, Object> attr : attrs) {
-
-                    }
-                  }
-            */
         showAttributeEdit(
           target, availableAttrs[w][Constants.KEY_ATTRIBUTE_NAME].toString()
         )

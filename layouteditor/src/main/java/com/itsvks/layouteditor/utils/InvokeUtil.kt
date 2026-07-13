@@ -19,7 +19,16 @@ object InvokeUtil {
             if(!className.endsWith("Design")) {
                 val classes =
                     JSONObject(FileUtil.readFromAsset("widgetclasses.json", context))
-                clazzName = classes.getString(className).toString()
+                clazzName = if (classes.has(className)) {
+                    classes.getString(className).toString()
+                } else {
+                    val simpleName = className.substringAfterLast('.')
+                    if (classes.has(simpleName)) {
+                        classes.getString(simpleName).toString()
+                    } else {
+                        className
+                    }
+                }
             } else {
                 clazzName = className
             }

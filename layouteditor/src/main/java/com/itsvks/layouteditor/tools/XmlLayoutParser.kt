@@ -3,7 +3,11 @@ package com.itsvks.layouteditor.tools
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.itsvks.layouteditor.editor.initializer.AttributeInitializer
@@ -110,7 +114,21 @@ class XmlLayoutParser(context: Context) {
                     XmlPullParser.END_TAG -> {
                         val depth = parser.depth
                         if (depth >= 2) {
-                            (listViews[depth - 2] as ViewGroup).addView(listViews[depth - 1])
+                            val parent = listViews[depth - 2] as ViewGroup
+                            val child = listViews[depth - 1]
+                            val childParams = child.layoutParams
+                            val expectedType = when (parent) {
+                                is ConstraintLayout -> ConstraintLayout.LayoutParams::class.java
+                                is LinearLayout -> LinearLayout.LayoutParams::class.java
+                                is FrameLayout -> FrameLayout.LayoutParams::class.java
+                                is RelativeLayout -> RelativeLayout.LayoutParams::class.java
+                                is LinearLayoutCompat -> LinearLayoutCompat.LayoutParams::class.java
+                                else -> ViewGroup.LayoutParams::class.java
+                            }
+                            if (childParams != null && !expectedType.isInstance(childParams)) {
+                                child.layoutParams = null
+                            }
+                            parent.addView(child)
                             listViews.removeAt(depth - 1)
                         }
                     }
