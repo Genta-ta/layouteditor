@@ -71,12 +71,12 @@ jobs:
         VERSION="${GITHUB_REF_NAME#v}"
         for f in release-apks/*.apk; do
           filename=$(basename "$f")
-          newname=$(echo "$filename" | sed "s/app-release/LayoutEditor-${VERSION}-release/")
+          newname=$(echo "$filename" | sed "s/layouteditor-/LayoutEditor-${VERSION}-release-/")
           mv "$f" "release-apks/$newname"
         done
         for f in debug-apks/*.apk; do
           filename=$(basename "$f")
-          newname=$(echo "$filename" | sed "s/app-debug/LayoutEditor-${VERSION}-debug/")
+          newname=$(echo "$filename" | sed "s/layouteditor-/LayoutEditor-${VERSION}-debug-/")
           mv "$f" "debug-apks/$newname"
         done
 
