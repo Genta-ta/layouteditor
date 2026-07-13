@@ -1,4 +1,4 @@
-![Banner](./app/src/main/res/drawable-v24/app_banner.png "app_banner")
+![Banner](https://github.com/Genta-ta/layouteditor/blob/main/layouteditor/src/main/play_store.png)
 
 <div align="center">
 
