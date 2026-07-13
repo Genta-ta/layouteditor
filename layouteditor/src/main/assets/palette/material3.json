@@ -1,0 +1,128 @@
+[
+    {
+        "name": "MaterialButton",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.MaterialButtonDesign",
+        "iconName": "ic_palette_button",
+        "defaultAttributes": {
+            "android:text": "Material Button",
+            "android:layout_width": "wrap_content",
+            "android:layout_height": "wrap_content"
+        }
+    },
+    {
+        "name": "MaterialCardView",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.MaterialCardViewDesign",
+        "iconName": "ic_palette_card_view",
+        "defaultAttributes": {
+            "android:layout_width": "match_parent",
+            "android:layout_height": "wrap_content",
+            "android:padding": "8dp"
+        }
+    },
+    {
+        "name": "TextInputLayout",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.TextInputLayoutDesign",
+        "iconName": "ic_palette_text_input_layout",
+        "defaultAttributes": {
+            "android:layout_width": "match_parent",
+            "android:layout_height": "wrap_content",
+            "android:padding": "8dp"
+        }
+    },
+    {
+        "name": "TextInputEditText",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.TextInputEditTextDesign",
+        "iconName": "ic_palette_edit_text",
+        "defaultAttributes": {
+            "android:layout_width": "match_parent",
+            "android:layout_height": "wrap_content",
+            "android:hint": "TextInputEditText"
+        }
+    },
+    {
+        "name": "MaterialTextView",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.MaterialTextViewDesign",
+        "iconName": "ic_palette_text_view",
+        "defaultAttributes": {
+            "android:text": "Material TextView",
+            "android:layout_width": "wrap_content",
+            "android:layout_height": "wrap_content"
+        }
+    },
+    {
+        "name": "ShapeableImageView",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.ShapeableImageViewDesign",
+        "iconName": "ic_palette_image_view",
+        "defaultAttributes": {
+            "android:layout_width": "48dp",
+            "android:layout_height": "48dp",
+            "android:src": "@drawable/default_image"
+        }
+    },
+    {
+        "name": "MaterialDivider",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.MaterialDividerDesign",
+        "iconName": "ic_palette_horizontal_divider",
+        "defaultAttributes": {
+            "android:layout_width": "match_parent",
+            "android:layout_height": "wrap_content"
+        }
+    },
+    {
+        "name": "MaterialButtonToggleGroup",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.MaterialButtonToggleGroupDesign",
+        "iconName": "ic_palette_radio_group",
+        "defaultAttributes": {
+            "android:layout_width": "wrap_content",
+            "android:layout_height": "wrap_content",
+            "android:padding": "8dp"
+        }
+    },
+    {
+        "name": "ExtendedFloatingActionButton",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.ExtendedFloatingActionButtonDesign",
+        "iconName": "ic_palette_floating_action_button",
+        "defaultAttributes": {
+            "android:text": "Extended FAB"
+        }
+    },
+    {
+        "name": "Slider",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.SliderDesign",
+        "iconName": "ic_palette_seek_bar",
+        "defaultAttributes": {
+            "android:layout_width": "match_parent",
+            "android:layout_height": "wrap_content"
+        }
+    },
+    {
+        "name": "MaterialSwitch",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.MaterialSwitchDesign",
+        "iconName": "ic_palette_switch",
+        "defaultAttributes": {
+            "android:text": "Material Switch",
+            "android:layout_width": "wrap_content",
+            "android:layout_height": "wrap_content"
+        }
+    },
+    {
+        "name": "MaterialChip",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.MaterialChipDesign",
+        "iconName": "ic_palette_chip",
+        "defaultAttributes": {
+            "android:text": "Material Chip",
+            "android:layout_width": "wrap_content",
+            "android:layout_height": "wrap_content"
+        }
+    },
+    {
+        "name": "BottomNavigationView",
+        "className": "com.itsvks.layouteditor.editor.palette.material3.BottomNavigationViewDesign",
+        "iconName": "ic_palette_bottom_navigation_view",
+        "defaultAttributes": {
+            "android:layout_width": "match_parent",
+            "android:layout_height": "wrap_content",
+            "android:gravity": "bottom"
+        }
+    }
+]

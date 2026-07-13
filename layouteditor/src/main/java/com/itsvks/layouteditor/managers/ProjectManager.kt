@@ -63,7 +63,8 @@ class ProjectManager private constructor() {
     paletteList.add(convertJsonToJavaObject(gson, type, Constants.PALETTE_LAYOUTS))
     paletteList.add(convertJsonToJavaObject(gson, type, Constants.PALETTE_CONTAINERS))
     // paletteList.add(convertJsonToJavaObject(gson, type, Constants.PALETTE_GOOGLE));
-    paletteList.add(convertJsonToJavaObject(gson, type, Constants.PALETTE_LEGACY))
+    // paletteList.add(convertJsonToJavaObject(gson, type, Constants.PALETTE_LEGACY))
+    paletteList.add(convertJsonToJavaObject(gson, type, Constants.PALETTE_MATERIAL3))
   }
 
   private fun convertJsonToJavaObject(

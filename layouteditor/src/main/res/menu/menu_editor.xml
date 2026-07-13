@@ -26,11 +26,19 @@
     app:showAsAction="always" />
 
   <item
-    android:id="@+id/edit_xml"
+    android:id="@+id/show_xml"
     android:name="@string/show_xml"
     android:title="@string/show_xml"
     android:icon="@drawable/xml"
     app:contentDescription="@string/show_xml"
+    app:showAsAction="ifRoom" />
+
+  <item
+    android:id="@+id/edit_xml"
+    android:name="@string/edit_xml"
+    android:title="@string/edit_xml"
+    android:icon="@drawable/edit"
+    app:contentDescription="@string/edit_xml"
     app:showAsAction="ifRoom" />
 
   <item

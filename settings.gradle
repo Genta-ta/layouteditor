@@ -5,6 +5,7 @@ pluginManagement {
         mavenCentral()
     }
 }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -13,5 +14,9 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
+
 rootProject.name = "Layout Editor"
-include ':app'
+
+include ':layouteditor'
+include ':layouteditor:vectormaster'
+project(':layouteditor:vectormaster').projectDir = file('layouteditor/vectormaster/vectormaster')

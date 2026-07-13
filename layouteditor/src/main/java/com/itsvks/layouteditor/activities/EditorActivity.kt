@@ -17,6 +17,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.view.menu.MenuBuilder
@@ -77,6 +78,22 @@ class EditorActivity : BaseActivity() {
   private var xmlPicker: FilePicker? = null
 
   private lateinit var layoutAdapter: LayoutListAdapter
+
+  private val editXmlLauncher = registerForActivityResult(
+    ActivityResultContracts.StartActivityForResult()
+  ) { result ->
+    if (result.resultCode == RESULT_OK) {
+      val editedXml = result.data?.getStringExtra(EditXMLActivity.EXTRA_KEY_XML)
+      if (editedXml != null) {
+        binding.editorLayout.loadLayoutFromParser(editedXml)
+        saveXml()
+        make(binding.root, "Layout updated from XML")
+          .setFadeAnimation()
+          .setType(SBUtils.Type.INFO)
+          .show()
+      }
+    }
+  }
 
   private val updateMenuIconsState: Runnable = Runnable { undoRedo!!.updateButtons() }
 
@@ -260,8 +277,8 @@ class EditorActivity : BaseActivity() {
       .setIcon(R.mipmap.ic_palette_relative_layout)
     paletteMenu.add(Menu.NONE, 5, Menu.NONE, Constants.TAB_TITLE_CONTAINERS)
       .setIcon(R.mipmap.ic_palette_view_pager)
-    paletteMenu.add(Menu.NONE, 6, Menu.NONE, Constants.TAB_TITLE_LEGACY)
-      .setIcon(R.mipmap.ic_palette_grid_layout)
+    paletteMenu.add(Menu.NONE, 6, Menu.NONE, Constants.TAB_TITLE_MATERIAL3)
+      .setIcon(R.mipmap.ic_palette_button)
 
     binding.listView.layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
 
@@ -330,8 +347,13 @@ class EditorActivity : BaseActivity() {
         return true
       }
 
-      R.id.edit_xml -> {
+      R.id.show_xml -> {
         showXml()
+        return true
+      }
+
+      R.id.edit_xml -> {
+        editXml()
         return true
       }
 
@@ -422,6 +444,17 @@ class EditorActivity : BaseActivity() {
     } else {
       startActivity(
         Intent(this, ShowXMLActivity::class.java).putExtra(ShowXMLActivity.EXTRA_KEY_XML, result)
+      )
+    }
+  }
+
+  private fun editXml() {
+    val result = XmlLayoutGenerator().generate(binding.editorLayout, true)
+    if (result.isEmpty()) {
+      showNothingDialog()
+    } else {
+      editXmlLauncher.launch(
+        Intent(this, EditXMLActivity::class.java).putExtra(EditXMLActivity.EXTRA_KEY_XML, result)
       )
     }
   }

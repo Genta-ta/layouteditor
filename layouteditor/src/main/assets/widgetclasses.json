@@ -43,5 +43,16 @@
     "RatingBar": "com.itsvks.layouteditor.editor.palette.widgets.RatingBarDesign",
     "TextureView": "com.itsvks.layouteditor.editor.palette.widgets.TextureViewDesign",
     "SurfaceView": "com.itsvks.layouteditor.editor.palette.widgets.SurfaceViewDesign",
-    "ConstraintLayout":"com.itsvks.layouteditor.editor.palette.layouts.ConstraintLayoutDesign"
+    "ConstraintLayout":"com.itsvks.layouteditor.editor.palette.layouts.ConstraintLayoutDesign",
+    "MaterialButton": "com.itsvks.layouteditor.editor.palette.material3.MaterialButtonDesign",
+    "MaterialCardView": "com.itsvks.layouteditor.editor.palette.material3.MaterialCardViewDesign",
+    "TextInputLayout": "com.itsvks.layouteditor.editor.palette.material3.TextInputLayoutDesign",
+    "TextInputEditText": "com.itsvks.layouteditor.editor.palette.material3.TextInputEditTextDesign",
+    "MaterialTextView": "com.itsvks.layouteditor.editor.palette.material3.MaterialTextViewDesign",
+    "ShapeableImageView": "com.itsvks.layouteditor.editor.palette.material3.ShapeableImageViewDesign",
+    "MaterialDivider": "com.itsvks.layouteditor.editor.palette.material3.MaterialDividerDesign",
+    "MaterialButtonToggleGroup": "com.itsvks.layouteditor.editor.palette.material3.MaterialButtonToggleGroupDesign",
+    "ExtendedFloatingActionButton": "com.itsvks.layouteditor.editor.palette.material3.ExtendedFloatingActionButtonDesign",
+    "Slider": "com.itsvks.layouteditor.editor.palette.material3.SliderDesign",
+    "MaterialSwitch": "com.itsvks.layouteditor.editor.palette.material3.MaterialSwitchDesign"
 }
