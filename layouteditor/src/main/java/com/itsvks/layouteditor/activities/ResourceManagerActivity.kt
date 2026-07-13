@@ -34,7 +34,6 @@ import com.itsvks.layouteditor.utils.Constants
 import com.itsvks.layouteditor.utils.FilePicker
 import com.itsvks.layouteditor.utils.FileUtil
 import com.itsvks.layouteditor.utils.SBUtils
-import com.sdsmdg.harjot.vectormaster.VectorMasterDrawable
 import java.io.FileNotFoundException
 
 class ResourceManagerActivity : BaseActivity() {
@@ -255,14 +254,7 @@ class ResourceManagerActivity : BaseActivity() {
       val fragment = supportFragmentManager.findFragmentByTag("f" + binding!!.pager.currentItem)
       if (fragment is DrawableFragment) {
         try {
-          val drawable = VectorMasterDrawable(this)
-          drawable.setInputStream(contentResolver.openInputStream(uri))
-          if (drawable.isVector) fragment.addDrawable(uri) else SBUtils.make(
-            binding!!.getRoot(), "Not a valid vector drawable"
-          )
-            .setFadeAnimation()
-            .setType(SBUtils.Type.INFO)
-            .show()
+          fragment.addDrawable(uri)
         } catch (e: FileNotFoundException) {
           e.printStackTrace()
           ToastUtils.showShort(e.toString())

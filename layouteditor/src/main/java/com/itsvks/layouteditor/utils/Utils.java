@@ -160,10 +160,8 @@ public class Utils {
       new Callable<VectorMasterDrawable>() {
         @Override
         public VectorMasterDrawable call() throws Exception {
-          // Load the drawable from file
           InputStream is = context.getContentResolver().openInputStream(uri);
-          VectorMasterDrawable drawable = new VectorMasterDrawable(context);
-          drawable.setInputStream(is);
+          VectorMasterDrawable drawable = new VectorMasterDrawable(context, 0);
           is.close();
           return drawable;
         }
