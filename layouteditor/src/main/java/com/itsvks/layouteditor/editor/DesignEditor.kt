@@ -793,8 +793,9 @@ class DesignEditor : LinearLayout {
   }
 
   fun showDefinedAttributes(target: View) {
-    val keys = viewAttributeMap[target]!!.keySet()
-    val values = viewAttributeMap[target]!!.values()
+    val attrsMap = viewAttributeMap[target] ?: return
+    val keys = attrsMap.keySet()
+    val values = attrsMap.values()
 
     val attrs: MutableList<HashMap<String, Any>> = ArrayList()
     val allAttrs = initializer.getAllAttributesForView(target)
