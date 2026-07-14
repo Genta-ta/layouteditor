@@ -405,6 +405,32 @@ class DesignEditor : LinearLayout {
     invalidate()
   }
 
+  fun nudgeSelectedView(dxDp: Int, dyDp: Int) {
+    val sv = selectedView ?: return
+    val density = context.resources.displayMetrics.density
+    val dx = (dxDp * density).toInt()
+    val dy = (dyDp * density).toInt()
+    if (dx == 0 && dy == 0) return
+
+    setParentsLayoutSuppressed(sv, true)
+    sv.layout(sv.left + dx, sv.top + dy, sv.right + dx, sv.bottom + dy)
+    setParentsLayoutSuppressed(sv, false)
+
+    val lp = sv.layoutParams
+    if (lp is ViewGroup.MarginLayoutParams) {
+      lp.leftMargin = lp.leftMargin + dx
+      lp.topMargin = lp.topMargin + dy
+      sv.layoutParams = lp
+    }
+
+    val marginLeftDp = ((if (lp is ViewGroup.MarginLayoutParams) lp.leftMargin else 0) / density).toInt()
+    val marginTopDp = ((if (lp is ViewGroup.MarginLayoutParams) lp.topMargin else 0) / density).toInt()
+    viewAttributeMap[sv]?.putValue("android:layout_marginLeft", "${marginLeftDp}dp")
+    viewAttributeMap[sv]?.putValue("android:layout_marginTop", "${marginTopDp}dp")
+
+    invalidate()
+  }
+
   private fun setParentsLayoutSuppressed(view: View?, suppressed: Boolean) {
     if (BuildConfig.DEBUG) EditorLog.d(TAG, "setParentsLayoutSuppressed: suppressed=$suppressed, view=$view")
     var current: View? = view?.parent as? View

@@ -10,6 +10,7 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.TypedValue
+import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -674,6 +675,25 @@ class EditorActivity : BaseActivity() {
       .setPositiveButton("Close", null)
       .setNeutralButton("Clear") { _, _ -> EditorLog.clear() }
       .show()
+  }
+
+  override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+    val step = if (event.isShiftPressed) 10 else 5
+    val dx = when (keyCode) {
+      KeyEvent.KEYCODE_DPAD_LEFT -> -step
+      KeyEvent.KEYCODE_DPAD_RIGHT -> step
+      else -> 0
+    }
+    val dy = when (keyCode) {
+      KeyEvent.KEYCODE_DPAD_UP -> -step
+      KeyEvent.KEYCODE_DPAD_DOWN -> step
+      else -> 0
+    }
+    if (dx != 0 || dy != 0) {
+      binding.editorLayout.nudgeSelectedView(dx, dy)
+      return true
+    }
+    return super.onKeyDown(keyCode, event)
   }
 
   companion object {
