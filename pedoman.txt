@@ -191,6 +191,27 @@ CustomDrawerLayout.kt
 5. Shadow layout params corrupted
    → if (view !== shadow) skip layout params change
 
+=== SESI TERAKHIR (14 Juli 2026) ===
+
+1. Konversi 8 PNG screenshot → ScreenShot_LayoutEditor_05.jpg s/d 12.jpg
+   - Java ImageIO convert PNG → JPG (RGB, white background)
+   - Hapus file Screenshot_20260713/14_*.png (timestamps)
+
+2. Update README screenshots table
+   - 3 baris → 4 baris (12 screenshot total)
+   - Caption sesuai fitur: Debug Log, Swipe Palette, Resize Mode, Nudge, dll
+
+3. Buat pedoman.txt (file ini)
+   - Dokumentasi semua path & fungsi file penting
+   - Data flow, known bug fixes, feature checklist
+
+4. Update .gitignore
+   - Tambah section # Credential
+   - pola: *credentials*, *secret*, *token*, *key.json, *.env, *.pem, *.key
+
+5. Commit & push ke GitHub
+   - Commit: "fix: rename screenshots to .jpg, add pedoman.txt, update .gitignore"
+
 === FEATURES ===
 
 [OK] Edit XML (sora-editor, syntax highlight, validasi)
@@ -203,3 +224,5 @@ CustomDrawerLayout.kt
 [OK] ABI splits (arm64-v8a, armeabi-v7a, universal)
 [OK] GitHub Actions (build + release on tag push)
 [OK] README (feature docs, screenshots, badges)
+[OK] pedoman.txt (project roadmap & file reference)
+[OK] .gitignore credential patterns
