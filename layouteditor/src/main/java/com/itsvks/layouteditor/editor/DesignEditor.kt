@@ -272,6 +272,7 @@ class DesignEditor : LinearLayout {
             resizeBaseWidth = sv.width
             resizeBaseHeight = sv.height
             setParentsLayoutSuppressed(selectedView, true)
+            removeWidget(shadow)
             return true
           }
         }
@@ -307,6 +308,7 @@ class DesignEditor : LinearLayout {
                 resizeBaseWidth = sv.width
                 resizeBaseHeight = sv.height
                 setParentsLayoutSuppressed(selectedView, true)
+                removeWidget(shadow)
                 return true
               }
             }
@@ -487,15 +489,18 @@ class DesignEditor : LinearLayout {
             updateUndoRedoHistory()
           }
 
-          DragEvent.ACTION_DRAG_ENDED -> if (!event.result && draggedView != null) {
-            if (selectedView == draggedView) {
-              selectedView = null
-              invalidate()
+          DragEvent.ACTION_DRAG_ENDED -> {
+            removeWidget(shadow)
+            if (!event.result && draggedView != null) {
+              if (selectedView == draggedView) {
+                selectedView = null
+                invalidate()
+              }
+              removeId(draggedView, draggedView is ViewGroup)
+              removeViewAttributes(draggedView)
+              viewAttributeMap.remove(draggedView)
+              updateStructure()
             }
-            removeId(draggedView, draggedView is ViewGroup)
-            removeViewAttributes(draggedView)
-            viewAttributeMap.remove(draggedView)
-            updateStructure()
           }
 
           DragEvent.ACTION_DRAG_LOCATION, DragEvent.ACTION_DRAG_ENTERED -> if (shadow.parent == null) addWidget(
