@@ -340,6 +340,11 @@ class DesignEditor : LinearLayout {
             lp.height = sv.height
             sv.layoutParams = lp
           }
+          val density = context.resources.displayMetrics.density
+          val widthDp = (sv.width / density).toInt()
+          val heightDp = (sv.height / density).toInt()
+          viewAttributeMap[sv]?.putValue("android:layout_width", "${widthDp}dp")
+          viewAttributeMap[sv]?.putValue("android:layout_height", "${heightDp}dp")
           activeHandle = -1
           updateUndoRedoHistory()
           updateStructure()
