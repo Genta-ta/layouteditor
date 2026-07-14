@@ -108,6 +108,7 @@ class DesignEditor : LinearLayout {
   private var resizeBaseWidth: Int = 0
   private var resizeBaseHeight: Int = 0
   private val savedLayoutTransitions = HashMap<ViewGroup, LayoutTransition?>()
+  var isResizeEnabled: Boolean = false
 
   constructor(context: Context) : super(context) {
     init(context)
@@ -240,17 +241,20 @@ class DesignEditor : LinearLayout {
     selectionBorderPaint.style = Paint.Style.STROKE
     canvas.drawRect(bounds, selectionBorderPaint)
 
-    val positions = getHandlePositions(bounds)
-    for (pos in positions) {
-      handlePaint.color = Color.WHITE
-      canvas.drawCircle(pos.x, pos.y, handleRadius.toFloat(), handlePaint)
-      selectionBorderPaint.style = Paint.Style.STROKE
-      canvas.drawCircle(pos.x, pos.y, handleRadius.toFloat(), selectionBorderPaint)
+    if (isResizeEnabled) {
+      val positions = getHandlePositions(bounds)
+      for (pos in positions) {
+        handlePaint.color = Color.WHITE
+        canvas.drawCircle(pos.x, pos.y, handleRadius.toFloat(), handlePaint)
+        selectionBorderPaint.style = Paint.Style.STROKE
+        canvas.drawCircle(pos.x, pos.y, handleRadius.toFloat(), selectionBorderPaint)
+      }
     }
   }
 
   override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
     if (BuildConfig.DEBUG) EditorLog.d(TAG, "onInterceptTouchEvent: action=${ev.action}, x=${ev.x}, y=${ev.y}, selectedView=$selectedView")
+    if (!isResizeEnabled) return super.onInterceptTouchEvent(ev)
     if (ev.action == MotionEvent.ACTION_DOWN && selectedView != null) {
       val bounds = getSelectedViewBounds()
       if (BuildConfig.DEBUG) EditorLog.d(TAG, "  bounds=$bounds, handleTouchSlop=$handleTouchSlop")
@@ -290,7 +294,7 @@ class DesignEditor : LinearLayout {
           if (BuildConfig.DEBUG) EditorLog.d(TAG, "  already intercepting handle=$activeHandle, skip")
           return true
         }
-        if (selectedView != null) {
+        if (isResizeEnabled && selectedView != null) {
           val bounds = getSelectedViewBounds()
           if (bounds != null) {
             val positions = getHandlePositions(bounds)

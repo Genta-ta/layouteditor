@@ -47,6 +47,15 @@
                     tools:ignore="ContentDescription"
                     style="@style/ToolbarButtonStyle" />
 
+                <ImageView
+                    android:id="@+id/toggle_resize"
+                    style="@style/ToolbarButtonStyle"
+                    android:layout_marginEnd="5dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/view_type"
+                    android:src="@drawable/ic_resize"
+                    tools:ignore="ContentDescription" />
+
                 <com.google.android.material.divider.MaterialDivider
                     android:id="@+id/divider"
                     android:layout_width="match_parent"

@@ -5,4 +5,6 @@
     
     
 <file path="/layouteditor/build/outputs/apk/debug/output-metadata.json"/>
+<file path="/layouteditor/src/main/res/layout/menu_header.xml"/>
+    <file path="/layouteditor/src/main/res/layout/fragment_home.xml"/>
 </aml>

@@ -3,6 +3,8 @@ package com.itsvks.layouteditor.activities
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -557,6 +559,18 @@ class EditorActivity : BaseActivity() {
         true
       }
       popupMenu.show()
+    }
+    binding.toggleResize.setOnClickListener {
+      val editor = binding.editorLayout
+      editor.isResizeEnabled = !editor.isResizeEnabled
+      if (editor.isResizeEnabled) {
+        binding.toggleResize.setColorFilter(Color.BLUE, android.graphics.PorterDuff.Mode.SRC_IN)
+        TooltipCompat.setTooltipText(binding.toggleResize, "Resize: ON")
+      } else {
+        binding.toggleResize.clearColorFilter()
+        TooltipCompat.setTooltipText(binding.toggleResize, "Resize: OFF")
+      }
+      editor.invalidate()
     }
   }
 
