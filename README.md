@@ -88,21 +88,21 @@ Please report issues in [GitHub Issues](https://github.com/Genta-ta/layouteditor
 
 ## Screenshots
 
-| Home | Editor | Palette |
-|:----:|:------:|:-------:|
+| | | |
+|:-----:|:------:|:-------:|
 | ![Home](screenshots/ScreenShot_LayoutEditor_01.jpg) | ![Editor](screenshots/ScreenShot_LayoutEditor_02.jpg) | ![Palette](screenshots/ScreenShot_LayoutEditor_03.jpg) |
 
-| Blueprint | Debug Log | Swipe Palette |
-|:---------:|:---------:|:-------------:|
-| ![Blueprint](screenshots/ScreenShot_LayoutEditor_04.jpg) | ![Debug Log](screenshots/ScreenShot_LayoutEditor_05.jpg) | ![Swipe Palette](screenshots/ScreenShot_LayoutEditor_06.jpg) |
+| | | |
+|:---------:|:---------:|:--------:|
+| ![Blueprint](screenshots/ScreenShot_LayoutEditor_04.jpg) | ![Material3](screenshots/ScreenShot_LayoutEditor_10.jpg) | ![Settings](screenshots/ScreenShot_LayoutEditor_12.jpg) |
 
-| Resize Mode | Nudge (Arrow Keys) | XML Editor |
-|:-----------:|:------------------:|:----------:|
+| | | |
+|:-----------:|:----------:|:----------:|
 | ![Resize](screenshots/ScreenShot_LayoutEditor_07.jpg) | ![Nudge](screenshots/ScreenShot_LayoutEditor_08.jpg) | ![XML](screenshots/ScreenShot_LayoutEditor_09.jpg) |
 
-| Material 3 | Resource Manager | Settings |
-|:----------:|:----------------:|:--------:|
-| ![Material3](screenshots/ScreenShot_LayoutEditor_10.jpg) | ![Resources](screenshots/ScreenShot_LayoutEditor_11.jpg) | ![Settings](screenshots/ScreenShot_LayoutEditor_12.jpg) |
+| |
+|:-------:|:---:|
+| 
 
 ## Credits
 - [Kerismaker](https://www.flaticon.com/authors/kerismaker) for the app [icon](https://www.flaticon.com/free-icon/template_6863985)
