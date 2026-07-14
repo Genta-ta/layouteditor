@@ -86,3 +86,16 @@ lint/tmp/
 
 
 .androidide/
+
+# Credential
+*credentials*
+*credential*
+*secret*
+*token*
+*key.json
+*.env
+.env.*
+auth.json
+password*
+*.pem
+*.key

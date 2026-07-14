@@ -1,0 +1,205 @@
+=== PEDOMAN LAYOUT EDITOR ===
+
+root: /sdcard/AndroidPEProjects/layouteditor/
+Module: :layouteditor (+ :layouteditor:vectormaster)
+
+=== ACTIVITIES ===
+
+EditorActivity.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/activities/EditorActivity.kt
+  Fungsi: Aktivitas utama. Toolbar, drawer, menu, drag & drop, XML import/export,
+  preview, resource manager, undo/redo, swipe palette toggle, debug log dialog,
+  arrow key nudge via onKeyDown, click handler toggle_resize.
+
+EditXMLActivity.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/activities/EditXMLActivity.kt
+  Fungsi: Editor XML dengan sora-editor, syntax highlight, XML validation,
+  save & sync balik ke editor via loadLayoutFromParser().
+
+PreviewLayoutActivity.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/activities/PreviewLayoutActivity.kt
+  Fungsi: Preview hasil layout XML.
+
+ResourceManagerActivity.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/activities/ResourceManagerActivity.kt
+  Fungsi: Manajemen resource (drawable, values, font, dll).
+
+BaseActivity.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/BaseActivity.kt
+  Fungsi: Base activity, theme handling.
+
+=== EDITOR INTI ===
+
+DesignEditor.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/editor/DesignEditor.kt
+  Fungsi: Jantung editor. Extends LinearLayout.
+  - Touch handling: selectChild, resize (8 handles), shadow drag indicator
+  - Drag & drop: setDragListener (OnDragListener) untuk semua ViewGroup
+  - Nudge: nudgeSelectedView(dxDp, dyDp) via arrow keys
+  - Resize toggle: isResizeEnabled (default false)
+  - Layout suppression: setParentsLayoutSuppressed() biar parent gak override posisi
+  - Undo/Redo: via UndoRedoManager + loadLayoutFromParser()
+  - XML generation: lewat XmlLayoutGenerator
+  - Clear all: clearAll() reset selectedView, handle, views
+  - Shadow view: View(context) ukuran 50x35dp, warna colorOutline Material
+  - ViewAttributeMap: HashMap<View, AttributeMap> untuk simpan atribut tiap view
+
+editor/DeviceConfiguration.kt & editor/ViewType.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/editor/
+  Fungsi: DeviceConfiguration → ukuran SMALL/MEDIUM/LARGE.
+  ViewType → enum DESIGN / BLUEPRINT.
+
+=== PALETTE ===
+
+Path: layouteditor/src/main/assets/palette/
+widgets.json, layouts.json, buttons.json, text.json, material3.json, dll
+Fungsi: Data palette widget per kategori.
+
+widgetclasses.json
+  Path: layouteditor/src/main/assets/widgetclasses.json
+  Fungsi: Mapping nama widget → class Design (58 entries, 13 Material 3).
+
+Design Classes:
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/editor/palette/
+  - layouts/ → ConstraintLayoutDesign, LinearLayoutDesign, RelativeLayoutDesign, etc
+  - buttons/ → ButtonDesign, ChipDesign, FABDesign, etc
+  - text/ → TextViewDesign, EditTextDesign, etc
+  - containers/ → ScrollViewDesign, CardViewDesign, RecyclerViewDesign, etc
+  - widgets/ → ViewDesign, ImageViewDesign, ProgressBarDesign, etc
+  - legacy/ → GridViewDesign, ListViewDesign, TabHostDesign, GridLayoutDesign
+  - material3/ → 13 Material 3 components
+
+=== TOOLS ===
+
+XmlLayoutParser.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/tools/XmlLayoutParser.kt
+  Fungsi: Parse XML string → view tree. Pakai XmlPullParser.
+  - createView(parser.name, context) lookup di widgetclasses.json
+  - Auto-detect LayoutParams type per parent
+  - viewAttributeMap diisi dari atribut XML
+
+XmlLayoutGenerator.java
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/tools/XmlLayoutGenerator.java
+  Fungsi: Generate XML string dari view tree. Rekursif peek().
+  - getRawClassName(): skip java.lang.Object (shadow view)
+
+ConvertImportedXml.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/editor/convert/ConvertImportedXml.kt
+  Fungsi: Konversi XML import.
+
+=== UTILS ===
+
+InvokeUtil.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/utils/InvokeUtil.kt
+  Fungsi: createView(className, context) pakai reflection + widgetclasses.json.
+
+EditorLog.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/utils/EditorLog.kt
+  Fungsi: Singleton debug log in-app. Max 500 entries.
+
+Constants.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/utils/Constants.kt
+  Fungsi: GITHUB_URL, EXTRA_KEY, ATTRIBUTES_FILE, PARENT_ATTRIBUTES_FILE, dll.
+
+Utils.java
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/utils/Utils.java
+  Fungsi: pxToDp (misnamed, actually dp→px), isDarkMode, getSurfaceColor, etc.
+
+=== INITIALIZER ===
+
+AttributeInitializer.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/editor/initializer/AttributeInitializer.kt
+  Fungsi: Init atribut view dari attributes.json + parent_attributes.json.
+
+AttributeMap.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/editor/initializer/AttributeMap.kt
+  Fungsi: Key-value store atribut per view.
+
+=== LAYOUT XML ===
+
+activity_layout_editor.xml
+  Path: layouteditor/src/main/res/layout/activity_layout_editor.xml
+  Fungsi: Layout utama → DrawerLayout > LinearLayoutCompat > AppBarLayout,
+  toolbar + RelativeLayout row2 (device_size, view_type, toggle_resize),
+  DesignEditor, NavigationView kiri/kanan.
+
+activity_edit_xml.xml
+  Path: layouteditor/src/main/res/layout/activity_edit_xml.xml
+  Fungsi: Layout EditXMLActivity.
+
+=== MENU ===
+
+menu_editor.xml
+  Path: layouteditor/src/main/res/menu/menu_editor.xml
+  Fungsi: undo, redo, show_structure, show_xml, edit_xml, preview, etc.
+
+menu_view_type.xml, menu_device_size.xml, menu_font.xml, etc.
+
+=== DRAWABLE ===
+
+ic_resize.xml
+  Path: layouteditor/src/main/res/drawable/ic_resize.xml
+  Fungsi: Icon 4 arah panah untuk toggle resize mode.
+
+=== VIEWS ===
+
+StructureView.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/views/StructureView.kt
+  Fungsi: Tree view hirarki widget di drawer kanan.
+
+CustomDrawerLayout.kt
+  Path: layouteditor/src/main/java/com/itsvks/layouteditor/views/CustomDrawerLayout.kt
+  Fungsi: DrawerLayout kustom.
+
+=== DATA FLOW ===
+
+1. DRAG DRAG: palette → startDrag() → ACTION_DRAG_STARTED
+   → ENTERED/LOCATION → shadow ditambahkan
+   → ACTION_DROP → removeWidget(shadow), createView(), addWidget()
+   → ACTION_DRAG_ENDED → removeWidget(shadow) safety
+
+2. RESIZE: touch handle → onInterceptTouchEvent hitung jarak 8 handle
+   → ACTION_MOVE → resizeSelectedView(dx, dy)
+   → ACTION_UP → commit width/height ke layoutParams + attributeMap (dp)
+   → Gate: isResizeEnabled (default false)
+
+3. NUDGE: onKeyDown → nudgeSelectedView(dx, dy)
+   → suppressLayout → sv.layout() → update margins + attributeMap
+
+4. EDIT XML: XmlLayoutGenerator.generate() → EditXMLActivity
+   → return XML → loadLayoutFromParser() rebuild tree
+
+5. UNDO/REDO: UndoRedoManager simpan XML string
+   → loadLayoutFromParser(xmlString) restore
+
+6. SAVE: XmlLayoutGenerator().generate(editor, true) → file .xml
+
+=== KNOWN BUG FIXES ===
+
+1. ConstraintLayout crash (LinearLayout.LayoutParams cast)
+   → addWidget() detect parent LayoutParams type, create via reflection
+
+2. Shadow persist setelah drag
+   → removeWidget(shadow) di ACTION_DRAG_ENDED + resize start
+
+3. NPE showDefinedAttributes
+   → viewAttributeMap[target] ?: return
+
+4. java.lang.Object di XML output
+   → XmlLayoutGenerator peek() skip class == "java.lang.Object"
+
+5. Shadow layout params corrupted
+   → if (view !== shadow) skip layout params change
+
+=== FEATURES ===
+
+[OK] Edit XML (sora-editor, syntax highlight, validasi)
+[OK] Material 3 palette (13 komponen)
+[OK] Resize handles (8 handle, all directions)
+[OK] Resize toggle (default OFF, icon biru ON)
+[OK] Shadow view cleanup (drag end + resize start)
+[OK] Arrow key nudge (5dp, shift+10dp, margin update)
+[OK] Debug Log (in-app, debug build only)
+[OK] ABI splits (arm64-v8a, armeabi-v7a, universal)
+[OK] GitHub Actions (build + release on tag push)
+[OK] README (feature docs, screenshots, badges)
