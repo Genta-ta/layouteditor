@@ -594,6 +594,7 @@ class DesignEditor : LinearLayout {
                 )
               }
             } else addWidget(draggedView, parent, event)
+            removeWidget(shadow)
             updateStructure()
             updateUndoRedoHistory()
           }
@@ -744,11 +745,13 @@ class DesignEditor : LinearLayout {
       newParent.addView(view, index)
     } else {
       try {
-        val parentLayoutParamsClass = getLayoutParamsClass(newParent)
-        if (parentLayoutParamsClass != null && !parentLayoutParamsClass.isInstance(view.layoutParams)) {
-          val ctor = parentLayoutParamsClass.getConstructor(Int::class.java, Int::class.java)
-          val newParams = ctor.newInstance(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT) as ViewGroup.LayoutParams
-          view.layoutParams = newParams
+        if (view !== shadow) {
+          val parentLayoutParamsClass = getLayoutParamsClass(newParent)
+          if (parentLayoutParamsClass != null && !parentLayoutParamsClass.isInstance(view.layoutParams)) {
+            val ctor = parentLayoutParamsClass.getConstructor(Int::class.java, Int::class.java)
+            val newParams = ctor.newInstance(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT) as ViewGroup.LayoutParams
+            view.layoutParams = newParams
+          }
         }
         newParent.addView(view, newParent.childCount)
       } catch (e: Exception) {
