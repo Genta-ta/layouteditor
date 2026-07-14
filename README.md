@@ -2,7 +2,8 @@
 
 <div align="center">
 
-[![Latest release](https://img.shields.io/github/v/release/Genta-ta/layouteditor?include_prereleases&label=latest%20release&style=for-the-badge)](https://github.com/Genta-ta/layouteditor/releases/latest)
+[![Latest release](https://img.shields.io/github/v/release/Genta-ta/layouteditor?include_prereleases&label=latest%20release&style=for-the-badge)](https://github.com/Genta-ta/layouteditor/releases)
+[![Sponsor](https://img.shields.io/badge/Sponsor-Genta--ta-ff69b4?style=for-the-badge&logo=github)](https://github.com/sponsors/Genta-ta)
 [![Discord](https://img.shields.io/discord/1082286665822900224?style=for-the-badge)](https://discord.gg/EdeVQSghMA)
 ![Downloads](https://img.shields.io/github/downloads/Genta-ta/layouteditor/total?style=for-the-badge)
 ![GitHub repo size](https://img.shields.io/github/repo-size/Genta-ta/layouteditor?style=for-the-badge)
@@ -34,7 +35,7 @@
 | **Widgets** | View, ImageView, WebView, VideoView, CalendarView, TextClock, ProgressBar, SeekBar, RatingBar, SearchView, SurfaceView |
 | **Layouts** | RelativeLayout, ConstraintLayout, LinearLayout, FrameLayout, TableLayout, Space |
 | **Containers** | Spinner, RecyclerView, NestedScrollView, ViewPager, CardView, AppBarLayout, TabLayout, Toolbar, NavigationView |
-| **Material 3** | MaterialButton, MaterialCardView, TextInputLayout, MaterialTextView, ShapeableImageView, MaterialDivider, MaterialSwitch, MaterialChip, Slider, BottomNavigationView, ExtendedFAB, ButtonToggleGroup |
+| **Material 3** | MaterialButton, MaterialCardView, TextInputLayout, MaterialTextView, ShapeableImageView, MaterialDivider, MaterialSwitch, MaterialChip, Slider, BottomNavigationView, ExtendedFAB, Bu[...] 
 
 ### XML Editing
 - **Show XML** - Preview the generated XML with syntax highlighting (read-only)
@@ -100,13 +101,15 @@ Please report issues in [GitHub Issues](https://github.com/Genta-ta/layouteditor
 |:-----------:|:----------:|:----------:|
 | ![Resize](screenshots/ScreenShot_LayoutEditor_07.jpg) | ![Nudge](screenshots/ScreenShot_LayoutEditor_08.jpg) | ![XML](screenshots/ScreenShot_LayoutEditor_09.jpg) |
 
+| |
+|:-------:|:---:|
+| 
 
 ## Credits
 - [Kerismaker](https://www.flaticon.com/authors/kerismaker) for the app [icon](https://www.flaticon.com/free-icon/template_6863985)
 - [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor) (code editor)
 - [Akash Yadav](https://github.com/itsaky) for inspiration from [AndroidIDE](https://github.com/AndroidIDEOfficial/AndroidIDE)
 - [Vivek Kumar Sahani](https://github.com/itsvks19) & [Deep Kr. Ghosh](https://github.com/deepksghosh) for the original LayoutEditor project
-<iframe src="https://github.com/sponsors/Genta-ta/button" title="Sponsor Genta-ta" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
 
 ## License
 ```
