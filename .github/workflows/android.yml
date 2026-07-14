@@ -70,14 +70,14 @@ jobs:
       run: |
         VERSION="${GITHUB_REF_NAME#v}"
         for f in release-apks/*.apk; do
-          filename=$(basename "$f")
-          newname=$(echo "$filename" | sed "s/layouteditor-/LayoutEditor-${VERSION}-release-/")
-          mv "$f" "release-apks/$newname"
+          base=$(basename "$f")
+          abi=$(echo "$base" | sed 's/layouteditor-\(.*\)-release.apk/\1/')
+          mv "$f" "release-apks/LayoutEditor-${VERSION}-release-${abi}.apk"
         done
         for f in debug-apks/*.apk; do
-          filename=$(basename "$f")
-          newname=$(echo "$filename" | sed "s/layouteditor-/LayoutEditor-${VERSION}-debug-/")
-          mv "$f" "debug-apks/$newname"
+          base=$(basename "$f")
+          abi=$(echo "$base" | sed 's/layouteditor-\(.*\)-debug.apk/\1/')
+          mv "$f" "debug-apks/LayoutEditor-${VERSION}-debug-${abi}.apk"
         done
 
     - name: Create GitHub Release
