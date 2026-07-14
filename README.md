@@ -100,15 +100,13 @@ Please report issues in [GitHub Issues](https://github.com/Genta-ta/layouteditor
 |:-----------:|:----------:|:----------:|
 | ![Resize](screenshots/ScreenShot_LayoutEditor_07.jpg) | ![Nudge](screenshots/ScreenShot_LayoutEditor_08.jpg) | ![XML](screenshots/ScreenShot_LayoutEditor_09.jpg) |
 
-| |
-|:-------:|:---:|
-| 
 
 ## Credits
 - [Kerismaker](https://www.flaticon.com/authors/kerismaker) for the app [icon](https://www.flaticon.com/free-icon/template_6863985)
 - [Rosemoe](https://github.com/Rosemoe) for [sora-editor](https://github.com/Rosemoe/sora-editor) (code editor)
 - [Akash Yadav](https://github.com/itsaky) for inspiration from [AndroidIDE](https://github.com/AndroidIDEOfficial/AndroidIDE)
 - [Vivek Kumar Sahani](https://github.com/itsvks19) & [Deep Kr. Ghosh](https://github.com/deepksghosh) for the original LayoutEditor project
+<iframe src="https://github.com/sponsors/Genta-ta/button" title="Sponsor Genta-ta" height="32" width="114" style="border: 0; border-radius: 6px;"></iframe>
 
 ## License
 ```
