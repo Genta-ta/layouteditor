@@ -52,10 +52,12 @@ public class XmlLayoutGenerator {
 
   private String peek(View view, HashMap<View, AttributeMap> attributeMap, int depth) {
     if (attributeMap == null || view == null) return "";
+    String className = getRawClassName(view);
+    if ("java.lang.Object".equals(className)) return "";
     String indent = getIndent(depth);
     int nextDepth = depth;
 
-    String className = getClassName(view, indent);
+    className = getClassName(className, indent);
 
     if (depth == 0) {
       builder.append(TAB).append("xmlns:android=\"http://schemas.android.com/apk/res/android\"\n");
@@ -104,10 +106,12 @@ public class XmlLayoutGenerator {
   }
 
   @NonNull
-  private String getClassName(View view, String indent) {
-    String className =
-      useSuperclasses ? view.getClass().getSuperclass().getName() : view.getClass().getName();
+  private String getRawClassName(View view) {
+    return useSuperclasses ? view.getClass().getSuperclass().getName() : view.getClass().getName();
+  }
 
+  @NonNull
+  private String getClassName(String className, String indent) {
     if (useSuperclasses) {
       if (className.startsWith("android.widget.")) {
         className = className.replace("android.widget.", "");
