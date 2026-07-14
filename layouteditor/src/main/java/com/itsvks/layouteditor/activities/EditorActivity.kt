@@ -139,6 +139,10 @@ class EditorActivity : BaseActivity() {
 
     projectManager = ProjectManager.instance
 
+    if (projectManager.openedProject == null) {
+      finish()
+      return
+    }
     project = projectManager.openedProject!!
 
     supportActionBar?.title = project.name
